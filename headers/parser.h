@@ -1,23 +1,47 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <string_view>
 #include <vector>
+#include <filesystem>
+#include <string>
+#include <exception>
 
-namespace parser {
+namespace fs = std::filesystem;
 
-    std::vector<std::string_view> get_options(
-            const std::vector<std::string_view>&,
-            const std::string_view&,
-            size_t options_number = 1);
+struct Parser {
 
-    bool has_option(
-            const std::vector<std::string_view>& args,
-            const std::string_view& option_name);
+    bool is_to_ascii = false;
+    bool is_to_binary = false;
 
-    std::string_view get_suboptions(
-        const std::vector<std::string_view>&,
-        const std::string_view&);
-}
+    bool is_rotate = false;
+    std::vector<std::string> rotate_angles;
+    std::string rotate_order;
+
+    bool is_move = false;
+    std::vector<std::string> move_lengths;
+    std::string move_axis;
+
+    bool is_scale = false;
+    std::vector<std::string> scale_values;
+    std::string scale_axis;
+
+    bool is_toposet = false;
+
+    bool is_merge = false;
+    std::vector<fs::path> merge_files;
+
+    bool is_diff_location = false;
+    fs::path specify_file;
+
+    bool is_new_name = false;
+    fs::path out_name = "out.stl";
+
+    
+    Parser() = default;
+    Parser(std::vector<std::string>&);
+    Parser(int, char**);
+    void parse(std::vector<std::string>&);
+    
+}; // struct parser
 
 #endif
