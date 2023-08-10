@@ -14,15 +14,15 @@ struct Parser {
     bool is_to_binary = false;
 
     bool is_rotate = false;
-    std::vector<std::string> rotate_angles;
+    std::vector<double> rotate_angles;
     std::string rotate_order;
 
     bool is_move = false;
-    std::vector<std::string> move_lengths;
+    std::vector<double> move_lengths;
     std::string move_axis;
 
     bool is_scale = false;
-    std::vector<std::string> scale_values;
+    std::vector<double> scale_values;
     std::string scale_axis;
 
     bool is_toposet = false;
@@ -33,7 +33,6 @@ struct Parser {
     bool is_diff_location = false;
     fs::path specify_file;
 
-    bool is_new_name = false;
     fs::path out_name = "out.stl";
 
     

@@ -22,13 +22,13 @@ void Parser::parse(std::vector<std::string>& options) {
             auto steps = (rotate_order.empty() ? 3 : rotate_order.size());
 
             for (size_t i = 0; i < steps; ++i) {
-                rotate_angles.push_back(*(++it));
+                rotate_angles.push_back(std::stod(*(++it)));
             }
 
         } else if (it->find("-mv") != std::string::npos) {
 
             is_move = true;
-
+ 
             for (auto start = it->begin() + 3, back = it->end(); start != back;
                     ++start) {
                 move_axis += *start;
@@ -37,7 +37,7 @@ void Parser::parse(std::vector<std::string>& options) {
             auto steps = (move_axis.empty() ? 3 : move_axis.size());
 
             for (size_t i = 0; i < steps; ++i) {
-                move_lengths.push_back(*(++it));
+                move_lengths.push_back(std::stod(*(++it)));
             }
 
         } else if (it->find("-s") != std::string::npos) {
@@ -52,7 +52,7 @@ void Parser::parse(std::vector<std::string>& options) {
             auto steps = (scale_axis.empty() ? 1 : scale_axis.size());
 
             for (size_t i = 0; i < steps; ++i) {
-                scale_values.push_back(*(++it));
+                scale_values.push_back(std::stod(*(++it)));
             }
 
         } else if (*it == "-tp") {
@@ -72,9 +72,8 @@ void Parser::parse(std::vector<std::string>& options) {
             specify_file = *(++it);
 
         } else if (*it == "-o") {
-            is_new_name = true;
             out_name = *(++it);
-            continue;
+
         } else if (*it == "-h" || *it == "--help") {
             throw std::runtime_error(std::string(*it));
         } else {
