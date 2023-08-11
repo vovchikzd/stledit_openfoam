@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <string>
 #include <exception>
+#include <iostream>
 
 namespace fs = std::filesystem;
 
@@ -14,16 +15,16 @@ struct Parser {
     bool is_to_binary = false;
 
     bool is_rotate = false;
-    std::vector<double> rotate_angles;
+    std::vector<float> rotate_angles;
     std::string rotate_order;
 
     bool is_move = false;
-    std::vector<double> move_lengths;
-    std::string move_axis;
+    std::vector<float> move_lengths;
+    std::string move_axes;
 
     bool is_scale = false;
-    std::vector<double> scale_values;
-    std::string scale_axis;
+    std::vector<float> scale_values;
+    std::string scale_axes;
 
     bool is_toposet = false;
 

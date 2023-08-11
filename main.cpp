@@ -25,31 +25,17 @@ int main(int argc, char* argv[]) {
                   << "\t-file \t\tSpecify the *.stl file location.\n"
                   << "\t-h, --help \tDisplay help message.\n"
                   << "\t-merge \t\tMerge transferred *.stl files into one ascii file.\n"
-                  << "\t-mv \t\tMove object. All three movement size must be specified.\n"
-                  << "\t\t\tTo specify the movement axis is typing '-mvx' or '-mvyz'.\n"
+                  << "\t-mv \t\tMove object. To specify the movement axis is typing '-mvx' or '-mvyz'.\n"
                   << "\t-o \t\tSpecifies the name of the resulting *.stl file.\n"
-                  << "\t-r \t\tRotate object. All three angles must be specified.\n"
-                  << "\t\t\tTo specify the rotate axis and rotate order is typing '-rx' or '-ryz'.\n"
-                  << "\t\t\tThe order of axis names is important.\n"
+                  << "\t-r \t\tRotate object. To specify the rotate axis and rotate order\n"
+                  << "\t\t\tis typing '-rx' or '-ryz'. The order of axis names is important.\n"
                   << "\t-s \t\tScale object. By default is requires one scale value.\n"
                   << "\t\t\tTo specify the scale axis is typing '-sx' or '-syz'.\n"
                   << "\t-tp \t\tCreate topoSetDict and refineMeshDict files in the system folder.\n\n";
         return 0;
     }
 
-    Parser parser;
-    
-    try {
-        parser = Parser(args);
-    } catch (std::runtime_error& error) {
-        std::cerr << "Error! Incorrect use of the \"" << error.what() << "\" argument.\n"
-                  << "Try \"stlEdit -h\" for more information.\n";
-        return 1;
-    } catch (std::exception& error) {
-        std::cerr << "Error! Unknown argument: \"" << error.what() << "\".\n"
-                  << "Try \"stlEdit -h\" for more information.\n";
-        return 1;
-    }
+    Parser parser(args);
     
     return 0;
 }

@@ -18,3 +18,5 @@ target_include_directories(stlEdit
 target_sources(stlEdit
     PRIVATE
     ${sources})
+
+add_compile_options(-Wall -Wextra)

@@ -18,12 +18,14 @@ void Parser::parse(std::vector<std::string>& options) {
                 rotate_order += *start;
             }
 
-
-            auto steps = (rotate_order.empty() ? 3 : rotate_order.size());
-
-            for (size_t i = 0; i < steps; ++i) {
-                rotate_angles.push_back(std::stod(*(++it)));
+            int i = 0;
+            ++it;
+            while (i < 3 && (*it)[0] != '-' && it != end) {
+                rotate_angles.push_back(std::stof(*it));
+                ++i;
+                ++it;
             }
+            --it;
 
         } else if (it->find("-mv") != std::string::npos) {
 
@@ -31,14 +33,17 @@ void Parser::parse(std::vector<std::string>& options) {
  
             for (auto start = it->begin() + 3, back = it->end(); start != back;
                     ++start) {
-                move_axis += *start;
+                move_axes += *start;
             }
 
-            auto steps = (move_axis.empty() ? 3 : move_axis.size());
-
-            for (size_t i = 0; i < steps; ++i) {
-                move_lengths.push_back(std::stod(*(++it)));
+            int i = 0;
+            ++it;
+            while (i < 3 && (*it)[0] != '-' && it != end) {
+                move_lengths.push_back(std::stof(*it));
+                ++i;
+                ++it;
             }
+            --it;
 
         } else if (it->find("-s") != std::string::npos) {
 
@@ -46,20 +51,24 @@ void Parser::parse(std::vector<std::string>& options) {
 
             for (auto start = it->begin() + 2, back = it->end(); start != back;
                     ++start) {
-                scale_axis += *start;
+                scale_axes += *start;
             }
 
-            auto steps = (scale_axis.empty() ? 1 : scale_axis.size());
-
-            for (size_t i = 0; i < steps; ++i) {
-                scale_values.push_back(std::stod(*(++it)));
+            int i = 0;
+            ++it;
+            while (i < 3 && (*it)[0] != '-' && it != end) {
+                scale_values.push_back(std::stof(*it));
+                ++i;
+                ++it;
             }
+            --it;
 
         } else if (*it == "-tp") {
             is_toposet = true;
             
         } else if (*it == "-merge") {
             is_merge = true;
+
             ++it;
             while (it != end && (*it)[0] != '-') {
                 merge_files.push_back(*(it));
@@ -75,9 +84,17 @@ void Parser::parse(std::vector<std::string>& options) {
             out_name = *(++it);
 
         } else if (*it == "-h" || *it == "--help") {
-            throw std::runtime_error(std::string(*it));
+            
+            std::cerr << "Error! Incorrect use of the \"" << *it << "\" argument.\n"
+                      << "Try \"stlEdit -h\" for more information.\n";
+            std::exit(1);
+
         } else {
-            throw std::invalid_argument(std::string(*it));
+
+            std::cerr << "Error! Unknown argument: \"" << *it << "\".\n"
+                      << "Try \"stlEdit -h\" for more information.\n";
+            std::exit(1);
+
         }
     }
 }
