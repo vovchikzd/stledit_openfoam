@@ -55,21 +55,23 @@ void get_axis_and_scale(Facet& facet, const char& axis, const float& value) {
 
 }
 
+// The more common rotation matrices are transposed for more convenient
+// multiplication in the following steps
 void get_axis_and_rotate(Facet& facet, const char& axis, const float& angle) {
 
     if (axis == 'x') {
         Matrix<float, 3, 3> x_rotate{1, 0, 0,
-                                     0, std::cos(rad(angle)), -(std::sin(rad(angle))),
-                                     0, std::sin(rad(angle)), std::cos(rad(angle))};
+                                     0, std::cos(rad(angle)), std::sin(rad(angle)),
+                                     0, -(std::sin(rad(angle))), std::cos(rad(angle))};
         axis_rotate(facet, x_rotate);
     } else if (axis == 'y') {
-        Matrix<float, 3, 3> y_rotate{std::cos(rad(angle)), 0, std::sin(rad(angle)),
+        Matrix<float, 3, 3> y_rotate{std::cos(rad(angle)), 0, -(std::sin(rad(angle))),
                                      0, 1, 0,
-                                     -(std::sin(rad(angle))), 0, std::cos(rad(angle))};
+                                     std::sin(rad(angle)), 0, std::cos(rad(angle))};
         axis_rotate(facet, y_rotate);
     } else if (axis == 'z') {
-        Matrix<float, 3, 3> z_rotate{std::cos(rad(angle)), -(std::sin(rad(angle))), 0,
-                                     std::sin(rad(angle)), std::cos(rad(angle)), 0,
+        Matrix<float, 3, 3> z_rotate{std::cos(rad(angle)), std::sin(rad(angle)), 0,
+                                     -(std::sin(rad(angle))), std::cos(rad(angle)), 0,
                                      0, 0, 1};
         axis_rotate(facet, z_rotate);
     }  
