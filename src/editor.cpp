@@ -16,33 +16,19 @@ void axis_scale(Facet& facet, const int& axis, const float& value) {
 
 void axis_rotate(Facet& facet, Matrix<float, 3, 3>& rotate_matrix) {
 
-    Matrix<float, 1, 3> normal(facet.normal, facet.normal + 3);
-    auto rotated_normal = normal * rotate_matrix;
-    for (size_t i = 0; i < rotated_normal.size(); ++i) {
-        facet.normal[i] = rotated_normal[i];
-    }
+    Matrix<float, 4, 3> matrix_facet(facet.normal, facet.normal + 3);
+    matrix_facet.push_back(facet.first_vertex, facet.first_vertex + 3);
+    matrix_facet.push_back(facet.second_vertex, facet.second_vertex + 3);
+    matrix_facet.push_back(facet.third_vertex, facet.third_vertex + 3);
 
-    Matrix<float, 1, 3> first_vertex(facet.first_vertex,
-                                     facet.first_vertex + 3);
-    auto rotated_first_vertex = first_vertex * rotate_matrix;
-    for (size_t i = 0; i < rotated_first_vertex.size(); ++i) {
-        facet.first_vertex[i] = rotated_first_vertex[i];
-    }
+    auto new_facet = matrix_facet * rotate_matrix;
 
-    Matrix<float, 1, 3> second_vertex(facet.second_vertex,
-                                      facet.second_vertex + 3);
-    auto rotated_second_vertex = second_vertex * rotate_matrix;
-    for (size_t i = 0; i < rotated_second_vertex.size(); ++i) {
-        facet.second_vertex[i] = rotated_second_vertex[i];
+    for (int i = 0; i < 3; ++i) {
+        facet.normal[i] = new_facet(0, i);
+        facet.first_vertex[i] = new_facet(1, i);
+        facet.second_vertex[i] = new_facet(2, i);
+        facet.third_vertex[i] = new_facet(3, i);
     }
-
-    Matrix<float, 1, 3> third_vertex(facet.third_vertex,
-                                      facet.third_vertex + 3);
-    auto rotated_third_vertex = third_vertex * rotate_matrix;
-    for (size_t i = 0; i < rotated_third_vertex.size(); ++i) {
-        facet.third_vertex[i] = rotated_third_vertex[i];
-    }
-
 }
 
 void get_axis_and_move(Facet& facet, const char& axis, const float& length) {
