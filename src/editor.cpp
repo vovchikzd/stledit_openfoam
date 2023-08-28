@@ -14,6 +14,37 @@ void axis_scale(Facet& facet, const int& axis, const float& value) {
     facet.third_vertex[axis] *= value;
 }
 
+void axis_rotate(Facet& facet, Matrix<float, 3, 3>& rotate_matrix) {
+
+    Matrix<float, 1, 3> normal(facet.normal, facet.normal + 3);
+    auto rotated_normal = normal * rotate_matrix;
+    for (size_t i = 0; i < rotated_normal.size(); ++i) {
+        facet.normal[i] = rotated_normal[i];
+    }
+
+    Matrix<float, 1, 3> first_vertex(facet.first_vertex,
+                                     facet.first_vertex + 3);
+    auto rotated_first_vertex = first_vertex * rotate_matrix;
+    for (size_t i = 0; i < rotated_first_vertex.size(); ++i) {
+        facet.first_vertex[i] = rotated_first_vertex[i];
+    }
+
+    Matrix<float, 1, 3> second_vertex(facet.second_vertex,
+                                      facet.second_vertex + 3);
+    auto rotated_second_vertex = second_vertex * rotate_matrix;
+    for (size_t i = 0; i < rotated_second_vertex.size(); ++i) {
+        facet.second_vertex[i] = rotated_second_vertex[i];
+    }
+
+    Matrix<float, 1, 3> third_vertex(facet.third_vertex,
+                                      facet.third_vertex + 3);
+    auto rotated_third_vertex = third_vertex * rotate_matrix;
+    for (size_t i = 0; i < rotated_third_vertex.size(); ++i) {
+        facet.third_vertex[i] = rotated_third_vertex[i];
+    }
+
+}
+
 void get_axis_and_move(Facet& facet, const char& axis, const float& length) {
 
     if (axis == 'x') {
@@ -34,6 +65,27 @@ void get_axis_and_scale(Facet& facet, const char& axis, const float& value) {
         axis_scale(facet, 1, value);
     } else if (axis == 'z') {
         axis_scale(facet, 2, value);
+    }  
+
+}
+
+void get_axis_and_rotate(Facet& facet, const char& axis, const float& angle) {
+
+    if (axis == 'x') {
+        Matrix<float, 3, 3> x_rotate{1, 0, 0,
+                                     0, std::cos(rad(angle)), -(std::sin(rad(angle))),
+                                     0, std::sin(rad(angle)), std::cos(rad(angle))};
+        axis_rotate(facet, x_rotate);
+    } else if (axis == 'y') {
+        Matrix<float, 3, 3> y_rotate{std::cos(rad(angle)), 0, std::sin(rad(angle)),
+                                     0, 1, 0,
+                                     -(std::sin(rad(angle))), 0, std::cos(rad(angle))};
+        axis_rotate(facet, y_rotate);
+    } else if (axis == 'z') {
+        Matrix<float, 3, 3> z_rotate{std::cos(rad(angle)), -(std::sin(rad(angle))), 0,
+                                     std::sin(rad(angle)), std::cos(rad(angle)), 0,
+                                     0, 0, 1};
+        axis_rotate(facet, z_rotate);
     }  
 
 }
@@ -83,5 +135,21 @@ void scale(Facet& facet, const std::string& axes,
 
 void rotate(Facet& facet, const std::string& axes,
                           const std::vector<float>& angles) {
-    // need to implement 'matrix' probably
+    if(axes.empty()) {
+        std::string default_order = "xyz";
+        for (size_t i = 0, end = angles.size(); i < end; ++i) {
+            get_axis_and_rotate(facet, default_order[i], angles[i]);
+        }
+    } else {
+        if (angles.size() == 1) {
+            auto angle = angles[0];
+            for (auto axis: axes) {
+                get_axis_and_rotate(facet, axis, angle);
+            }
+        } else {           
+            for (size_t i = 0, end = axes.size(); i < end; ++i) {
+                get_axis_and_move(facet, axes[i], angles[i]);
+            }
+        }
+    }
 }

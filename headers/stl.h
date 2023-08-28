@@ -11,11 +11,11 @@ struct Facet {
     short attribute = 0;
 };
 
-/*
+
 struct STL {
     char header[80];
     std::vector<Facet> facets;
 };
-*/
+
 
 #endif

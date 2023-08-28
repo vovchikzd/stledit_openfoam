@@ -85,15 +85,13 @@ void Parser::parse(std::vector<std::string>& options) {
 
         } else if (*it == "-h" || *it == "--help") {
             
-            std::cerr << "Error! Incorrect use of the \"" << *it << "\" argument.\n"
-                      << "Try \"stlEdit -h\" for more information.\n";
-            std::exit(1);
+            std::cerr << "Error! Incorrect use of the \"" << *it << "\" argument.\n";
+            throw std::invalid_argument("Invalid argument");
 
         } else {
 
-            std::cerr << "Error! Unknown argument: \"" << *it << "\".\n"
-                      << "Try \"stlEdit -h\" for more information.\n";
-            std::exit(1);
+            std::cerr << "Error! Unknown argument: \"" << *it << "\".\n";
+            throw std::invalid_argument("Invalid argument");
 
         }
     }

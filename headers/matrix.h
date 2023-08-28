@@ -2,16 +2,15 @@
 #define MATRIX_H
 
 #include <memory>
-#include <exception>
+#include <utility>
+#include <stdexcept>
 #include <initializer_list>
 
 // TODO(#1): Iterators
 // TODO(#3): Determinant function
-// TODO(#4): Move semantic
 // TODO(#5): Transpose method
 // TODO(#6): Identity matrix method
 // TODO(#7): Invertible matrix function
-// TODO: Rewrite memory management
 
 template <typename T, size_t Rows, size_t Columns,
          template <typename> class Allocator = std::allocator>
@@ -20,22 +19,19 @@ private:
 
     const size_t cap = Rows * Columns;
     size_t sz = 0;
-    Allocator<T*> ptr_alloc;
-    Allocator<T> type_alloc;
-    T** rows_ptrs = nullptr;
+    Allocator<T> alloc;
+    T* values = nullptr;
 
-    using ptr_alloc_traits = std::allocator_traits<Allocator<T*>>;
-    using type_alloc_traits = std::allocator_traits<Allocator<T>>;
+    using alloc_traits = std::allocator_traits<Allocator<T>>;
+
+    void swap(Matrix<T, Rows, Columns, Allocator>& matrix) {
+        std::swap(sz, matrix.sz);
+        std::swap(values, matrix.values);
+    }
 
 public:
 
-    Matrix() {
-        rows_ptrs = ptr_alloc_traits::allocate(ptr_alloc, Rows); 
-        for(size_t i = 0; i < Rows; ++i) {
-            T* row = type_alloc_traits::allocate(type_alloc, Columns);
-            ptr_alloc_traits::construct(ptr_alloc, rows_ptrs + i, row);
-        }
-    }
+    Matrix(): values(alloc_traits::allocate(alloc, cap)) {}
 
     Matrix(std::initializer_list<T> list): Matrix() {
         for(auto it = list.begin(), end = list.end(); it != end; ++it) {
@@ -62,11 +58,15 @@ public:
         }
     }
 
+    Matrix(Matrix<T, Rows, Columns, Allocator>&& matrix): Matrix() {
+        sz = matrix.sz;
+        values = matrix.values;
+        matrix.sz = 0;
+        matrix.values = nullptr;
+    }
+
     void push_back(const T& value) {
-        size_t first_index = sz / Columns;
-        size_t second_index = sz - (first_index * Columns);
-        type_alloc_traits::construct(type_alloc,
-                rows_ptrs[first_index] + second_index, value);
+        alloc_traits::construct(alloc, values + sz, value);
         ++sz;
     }
 
@@ -105,108 +105,84 @@ public:
 
     Matrix<T, Rows, Columns, Allocator>& operator=(const Matrix<T, Rows, Columns, Allocator>& matrix) {
         if (this != &matrix) {
-            if (sz > matrix.size()) {
-                for (size_t place = sz; sz < matrix.size(); ++place) {
-                    size_t first_index = place / Columns;
-                    size_t second_index = place - (first_index * Columns);
-                    type_alloc_traits::destroy(type_alloc,
-                            rows_ptrs[first_index] + second_index);
-                }
-                sz = matrix.size();
-                for (size_t place = 0; place < sz; ++place) {
-                    (*this)[place] = matrix[place];
-                }
-            } else {
-                for (size_t place = 0; place < sz; ++place) {
-                    (*this)[place] = matrix[place];
-                }
+            auto copy = matrix;
+            swap(copy);
+        }
+        return *this;
+    }
 
-                for (size_t place = sz; place < matrix.size(); ++place) {
-                    push_back(matrix[place]);
-                }
-            }
+    Matrix<T, Rows, Columns, Allocator>& operator=(Matrix<T, Rows, Columns, Allocator>&& matrix) {
+        if (this != &matrix) {
+            sz = matrix.sz;
+            values = matrix.values;
+            matrix.sz = 0;
+            matrix.values = nullptr;
         }
         return *this;
     }
 
     Matrix<T, Rows, Columns, Allocator>& operator+=(const Matrix<T, Rows, Columns, Allocator>& matrix) {
         for (size_t i = 0; i < sz; ++i) {
-            (*this)[i] += matrix[i];
+            values[i] += matrix[i];
         }
         return *this;
     }
 
     Matrix<T, Rows, Columns, Allocator>& operator-=(const Matrix<T, Rows, Columns, Allocator>& matrix) {
         for (size_t i = 0; i < sz; ++i) {
-            (*this)[i] -= matrix[i];
+            values[i] -= matrix[i];
         }
         return *this;
     }
 
     Matrix<T, Rows, Columns, Allocator>& operator*=(const T& value) {
         for (size_t i = 0; i < sz; ++i) {
-            (*this)[i] *= value;
+            values[i] *= value;
         }
         return *this;
     }
 
     T& operator[](size_t number) {
-        size_t first_index = number / Columns;
-        size_t second_index = number - (first_index * Columns);
-        return rows_ptrs[first_index][second_index];
+        return values[number];
     }
 
     const T& operator[](size_t number) const {
-        size_t first_index = number / Columns;
-        size_t second_index = number - (first_index * Columns);
-        return rows_ptrs[first_index][second_index];
+        return values[number];
     }
 
     T& operator()(size_t first, size_t second) {
-        return rows_ptrs[first][second];
+        return values[second + (first * Columns)];
     }
 
     const T& operator()(size_t first, size_t second) const {
-        return rows_ptrs[first][second];
+        return values[second + (first * Columns)];
     }
 
     T& at(size_t number) {
-        if (number > sz) throw std::out_of_range("Invalid index");        
-        size_t first_index = number / Columns;
-        size_t second_index = number - (first_index * Columns);
-        return rows_ptrs[first_index][second_index];
+        if (number >= sz) throw std::out_of_range("Invalid index");        
+        return values[number];
     }
 
     const T& at(size_t number) const {
-        if (number > sz) throw std::out_of_range("Invalid index");        
-        size_t first_index = number / Columns;
-        size_t second_index = number - (first_index * Columns);
-        return rows_ptrs[first_index][second_index];
+        if (number >= sz) throw std::out_of_range("Invalid index");        
+        return values[number];
     }
 
     T& at(size_t first, size_t second) {
         if (first >= Rows || second >= Columns) throw std::out_of_range("Invalid index");        
-        return rows_ptrs[first][second];
+        return values[second + (first * Columns)];
     }
 
     const T& at(size_t first, size_t second) const {
         if (first >= Rows || second >= Columns) throw std::out_of_range("Invalid index");        
-        return rows_ptrs[first][second];
+        return values[second + (first * Columns)];
     }
 
     ~Matrix() {
         for (size_t place = 0; place < sz; ++place) {
-            size_t first_index = place / Columns;
-            size_t second_index = place - (first_index * Columns);
-            type_alloc_traits::destroy(type_alloc,
-                    rows_ptrs[first_index] + second_index);
+            alloc_traits::destroy(alloc, values + place);
         }
-        
-        for (size_t i = 0; i < Rows; ++i) {
-            type_alloc_traits::deallocate(type_alloc, rows_ptrs[i], Columns);
-        }
-        
-        ptr_alloc_traits::deallocate(ptr_alloc, rows_ptrs, Rows);
+        alloc_traits::deallocate(alloc, values, cap);
     }
 };
 
