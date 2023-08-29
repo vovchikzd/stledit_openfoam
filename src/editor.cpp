@@ -141,3 +141,20 @@ void rotate(Facet& facet, const std::string& axes,
         }
     }
 }
+
+void edit(const Parser& parser, STL& object) {
+    for (auto facet: object.facets) {
+
+        if (parser.is_rotate) {
+            rotate(facet, parser.rotate_order, parser.rotate_angles);
+        }
+
+        if (parser.is_move) {
+            move(facet, parser.move_axes, parser.move_lengths);
+        }
+
+        if (parser.is_scale) {
+            scale(facet, parser.scale_axes, parser.scale_values);
+        }
+    }
+}

@@ -4,6 +4,10 @@
 #include <exception>
 
 #include "parser.h"
+#include "reader.h"
+#include "editor.h"
+#include "toposet.h"
+#include "stl.h"
 
 namespace fs = std::filesystem;
 
@@ -45,6 +49,27 @@ int main(int argc, char* argv[]) {
         std::cerr << help;
         return 1;
     }
-    
+/* 
+    if (parser.is_merge) {
+        merge(parser); // implement
+        return 0;
+    }
+*/
+    STL object;
+    try {
+        object = read(parser);
+    } catch (std::exception&) {
+        std::cerr << help;
+        return 1;
+    }
+
+    if (parser.is_rotate || parser.is_move || parser.is_scale) {
+        edit(parser, object);
+    }
+/*
+    if (parser.is_toposet) {
+        toposet(object);
+    }
+*/
     return 0;
 }

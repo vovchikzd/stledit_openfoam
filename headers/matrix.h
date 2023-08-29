@@ -253,10 +253,10 @@ Matrix<T, Rows, Columns, Allocator> operator-(Matrix<T, Rows, Columns, Allocator
     copy *= -1;
     return copy;
 }
-
+/*
 template <typename T, size_t Size, template <typename> class Allocator>
 T determinant(Matrix<T, Size, Size, Allocator>& matrix) {
     // implement
 }
-
+*/
 #endif
