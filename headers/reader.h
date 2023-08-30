@@ -8,17 +8,18 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <utility>
 
 #include "parser.h"
 #include "stl.h"
 
 namespace fs = std::filesystem;
 
-STL read(const Parser&);
+std::pair<STL, fs::path> read(const Parser&);
 fs::path find_file();
-void ascii_read(const fs::path&, STL&); // todo
-void binary_read(const fs::path&, STL&); // todo
-bool is_binary(const fs::path&); // todo
+void ascii_read(const fs::path&, STL&);
+void binary_read(const fs::path&, STL&);
+bool is_binary(const fs::path&);
 void check_location_and_copy(const fs::path&);
 
 #endif

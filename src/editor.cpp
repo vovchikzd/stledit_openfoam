@@ -1,4 +1,4 @@
-#include "editor.h"
+#include "../headers/editor.h"
 
 void axis_move(Facet& facet, const int& axis, const float& length) {
     facet.normal[axis] += length;

@@ -8,6 +8,7 @@
 #include "editor.h"
 #include "toposet.h"
 #include "stl.h"
+#include "merge.h"
 
 namespace fs = std::filesystem;
 
@@ -49,27 +50,32 @@ int main(int argc, char* argv[]) {
         std::cerr << help;
         return 1;
     }
-/* 
+
     if (parser.is_merge) {
-        merge(parser); // implement
+        merge(parser);
         return 0;
     }
-*/
+
     STL object;
+    fs::path file;
     try {
-        object = read(parser);
+        auto readed = read(parser);
+        object = readed.first;
+        file = readed.second;
     } catch (std::exception&) {
         std::cerr << help;
         return 1;
     }
 
+    std::cout << file.string() << '\n';
+
     if (parser.is_rotate || parser.is_move || parser.is_scale) {
         edit(parser, object);
     }
-/*
+
     if (parser.is_toposet) {
-        toposet(object);
+        toposet(object, parser.file_numbers);
     }
-*/
+
     return 0;
 }

@@ -23,8 +23,8 @@ fs::path find_file() {
     }
 
     fs::directory_iterator default_location(constant/triSurface);
-
     std::vector<fs::directory_entry> files;
+
     for (auto file: default_location) {
         if (file.path().extension() == ".stl") {
             files.push_back(file);
@@ -38,14 +38,15 @@ fs::path find_file() {
     } else if (files.size() == 1) {
         result = files[0].path();
     } else {
-        std::cout << "There are some *.stl files, choose one.\n\n"
+        std::cout << "There are some *.stl files.\n"
+                  << "Choose one or cancel and specify location\n\n"
                   << "Files:\n";
         for (size_t i = 0; i < files.size(); ++i) {
             std::cout << i + 1 << ". " << files[i].path()
                                                   .filename()
                                                   .string() << '\n';
         }
-        std::cout << "\nType a number (0 of Ctrl-c to cancel): ";
+        std::cout << "\nType a number (0 or Ctrl-c to cancel): ";
         size_t choice;
         std::cin >> choice;
 
@@ -122,8 +123,8 @@ void ascii_read(const fs::path& file, STL& object) {
     while(!input_stl.eof()) {
         Facet facet;
         bool flag = true;
+        int vertex_count = 0;
         for (int i = 0; i < 7; ++i) {
-            int vertex_count = 0;
             std::getline(input_stl, readed);
             if (readed.find("endsolid") != std::string::npos || readed == "") {
                 flag = false;
@@ -184,12 +185,12 @@ void ascii_read(const fs::path& file, STL& object) {
     input_stl.close();
 }
 
-STL read(const Parser& parser) {
+std::pair<STL, fs::path> read(const Parser& parser) {
     STL object;
+    fs::path file;
     bool to_edit = (parser.is_rotate || parser.is_move || parser.is_scale);
     bool to_convert = (parser.is_to_ascii || parser.is_to_binary);
 
-    fs::path file;
     if (!parser.is_diff_location) {
         file = find_file();
     } else {
@@ -215,5 +216,7 @@ STL read(const Parser& parser) {
         ascii_read(file, object);
     }
 
-    return object;
+    std::pair<STL, fs::path> result{object, file};
+
+    return result;
 }
