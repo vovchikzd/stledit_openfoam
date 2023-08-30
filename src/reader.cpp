@@ -1,4 +1,4 @@
-#include "reader.h"
+#include "../headers/reader.h"
 
 fs::path find_file() {
     fs::path constant("constant");
@@ -92,12 +92,12 @@ bool is_binary(const fs::path& file) {
 
 void binary_read(const fs::path& file, STL& object) {
     std::ifstream input_stl(file);
-    int32_t facets_number;
+    uint32_t facets_number;
 
     input_stl.read(reinterpret_cast<char*>(&object.header), 80);
     input_stl.read(reinterpret_cast<char*>(&facets_number), 4);
 
-    for (int i = 0; i < facets_number; ++i) {
+    for (uint32_t i = 0; i < facets_number; ++i) {
         Facet facet;
         input_stl.read(reinterpret_cast<char*>(&facet.normal), 12);
         input_stl.read(reinterpret_cast<char*>(&facet.first_vertex), 12);
@@ -185,9 +185,10 @@ void ascii_read(const fs::path& file, STL& object) {
     input_stl.close();
 }
 
-std::pair<STL, fs::path> read(const Parser& parser) {
+std::tuple<STL, fs::path, bool> read(const Parser& parser) {
     STL object;
     fs::path file;
+    bool is_binary_file;
     bool to_edit = (parser.is_rotate || parser.is_move || parser.is_scale);
     bool to_convert = (parser.is_to_ascii || parser.is_to_binary);
 
@@ -208,15 +209,17 @@ std::pair<STL, fs::path> read(const Parser& parser) {
             std::exit(0);
         }
         binary_read(file, object);
+        is_binary_file = true;
     } else {
         if (parser.is_to_ascii && !to_edit && !parser.is_toposet) {
             check_location_and_copy(file);
             std::exit(0);
         }
         ascii_read(file, object);
+        is_binary_file = false;
     }
 
-    std::pair<STL, fs::path> result{object, file};
+    std::tuple<STL, fs::path, bool> result{object, file, is_binary_file};
 
     return result;
 }

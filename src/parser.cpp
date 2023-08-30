@@ -65,7 +65,7 @@ void Parser::parse(std::vector<std::string>& options) {
 
         } else if (*it == "-tp") {
             is_toposet = true;
-            if ((*(it + 1))[0] != '-') {
+            if (it + 1 != end && (*(it + 1))[0] != '-') {
                 file_numbers = std::stoi(*(++it));
             } 
         } else if (*it == "-merge") {

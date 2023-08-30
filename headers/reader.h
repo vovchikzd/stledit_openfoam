@@ -12,10 +12,11 @@
 
 #include "parser.h"
 #include "stl.h"
+#include <tuple>
 
 namespace fs = std::filesystem;
 
-std::pair<STL, fs::path> read(const Parser&);
+std::tuple<STL, fs::path, bool> read(const Parser&);
 fs::path find_file();
 void ascii_read(const fs::path&, STL&);
 void binary_read(const fs::path&, STL&);

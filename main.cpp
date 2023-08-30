@@ -2,6 +2,8 @@
 #include <filesystem>
 #include <vector>
 #include <exception>
+#include <tuple>
+
 
 #include "parser.h"
 #include "reader.h"
@@ -9,6 +11,7 @@
 #include "toposet.h"
 #include "stl.h"
 #include "merge.h"
+#include "writer.h"
 
 namespace fs = std::filesystem;
 
@@ -56,18 +59,21 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    std::tuple<STL, fs::path, bool> readed;
     STL object;
     fs::path file;
+    bool is_binary_file;
+
     try {
-        auto readed = read(parser);
-        object = readed.first;
-        file = readed.second;
+        readed = read(parser);
     } catch (std::exception&) {
         std::cerr << help;
         return 1;
     }
 
-    std::cout << file.string() << '\n';
+    object = std::get<0>(readed);
+    file = std::get<1>(readed);
+    is_binary_file = std::get<2>(readed);
 
     if (parser.is_rotate || parser.is_move || parser.is_scale) {
         edit(parser, object);
@@ -76,6 +82,13 @@ int main(int argc, char* argv[]) {
     if (parser.is_toposet) {
         toposet(object, parser.file_numbers);
     }
+
+    if (parser.is_to_binary || parser.is_to_ascii) {
+        if (parser.is_to_binary) is_binary_file = true;
+        else if (parser.is_to_ascii) is_binary_file = false;
+    }
+
+    write(object, file, is_binary_file, parser);
 
     return 0;
 }
