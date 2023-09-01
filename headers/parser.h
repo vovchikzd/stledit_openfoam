@@ -35,7 +35,7 @@ struct Parser {
     bool is_diff_location = false;
     fs::path specify_file;
 
-    fs::path out_name = "out.stl";
+    fs::path out_name;
 
     
     Parser() = default;
