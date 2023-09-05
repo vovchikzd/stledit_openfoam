@@ -27,7 +27,10 @@ struct Parser {
     std::string scale_axes;
 
     bool is_toposet = false;
-    int file_numbers = 3;
+    size_t file_numbers = 3;
+
+    bool is_wave = false;
+    size_t waves_numbers = 3; 
 
     bool is_merge = false;
     std::vector<fs::path> merge_files;

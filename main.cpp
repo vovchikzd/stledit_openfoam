@@ -4,6 +4,12 @@
 #include <filesystem>
 
 #include "parser.h"
+#include "stl.h"
+#include "tools.h"
+#include "read.h"
+#include "edit.h"
+#include "toposet.h"
+#include "write.h"
 
 namespace fs = std::filesystem;
 
@@ -22,8 +28,9 @@ int main(int argc, char* argv[]) {
                        "\t\t\tis typing '-rx' or '-ryz'. The order of axis names is important.\n"
                        "\t-s \t\tScale object. By default is requires one scale value.\n"
                        "\t\t\tTo specify the scale axis is typing '-sx' or '-syz'.\n"
-                       "\t-tp \t\tCreate topoSetDict and refineMeshDict files in the system folder.\n\n";
-
+                       "\t-tp \t\tCreate topoSetDict and refineMeshDict files in the system folder.\n"
+                       "\t-wv \t\tCreate a wave *.stl file based on model.\n\n";
+					   
     if (argc == 1) {
         std::cerr << help;
         return 1;
@@ -48,6 +55,61 @@ int main(int argc, char* argv[]) {
 
     fs::path new_name = parser.out_name;
 
+    std::vector<fs::path> files;
+    if (!parser.is_diff_location || !parser.is_merge) {
+
+        try {
+            files = find_file();
+        } catch (std::exception&) {
+            std::cerr << help;
+            return 1;
+        }
+
+    } else if (parser.is_diff_location) {
+        files.push_back(parser.specify_file);
+    } else if (parser.is_merge) {
+        files = parser.merge_files;
+    }
+
+    bool is_edit = (parser.is_rotate || parser.is_move || parser.is_scale);
+    bool is_convert = (parser.is_to_binary || parser.is_to_ascii);
+
+    std::vector<STL> objects;
+    if (!is_edit || !is_convert || !parser.is_toposet
+        || !parser.is_merge || !parser.is_wave) {
+        check_location_and_copy(files[0], new_name);
+        return 0;
+    } else {
+        objects = read(files);
+    }
+
+    if (is_edit) {
+        edit(parser, objects);
+    }
+
+    if (parser.is_toposet) {
+        create_toposet(objects, parser.file_numbers);
+    }
+/*
+    if (parser.is_wave) {
+        create_wave_stl(files);
+    }
+*/
+    fs::path write_file = get_write_file(files, new_name);
+
+    bool binary_code = true;
+    if (!is_convert && files.size() > 1) {
+        binary_code = false;
+    } else if (!is_convert && files.size() == 1) {
+        binary_code = is_binary(files[0]);
+    } else if (is_convert) {
+        if (parser.is_to_binary)
+            binary_code = true;
+        else if (parser.is_to_ascii)
+            binary_code = false;
+    }
+    
+    write(objects, write_file, binary_code);
 
     return 0;
 }

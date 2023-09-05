@@ -66,8 +66,15 @@ void Parser::parse(std::vector<std::string>& options) {
         } else if (*it == "-tp") {
             is_toposet = true;
             if (it + 1 != end && (*(it + 1))[0] != '-') {
-                file_numbers = std::stoi(*(++it));
-            } 
+                file_numbers = std::stoull(*(++it));
+            }
+        } else if (*it == "-wv") {
+            std::cerr << "-wv feature is not imnplemented yet.\nSorry.\n\n";
+            std::exit(1);
+            /* is_wave = true;
+            if (it + 1 != end && (*(it + 1))[0] != '-') {
+                waves_numbers = std::stoull(*(++it));
+            } */
         } else if (*it == "-merge") {
             is_merge = true;
 
