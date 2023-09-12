@@ -20,7 +20,8 @@ void Parser::parse(std::vector<std::string>& options) {
 
             int i = 0;
             ++it;
-            while (i < 3 && (*it)[0] != '-' && it != end) {
+            while (i < 3 && it != end &&
+                    ((*it)[0] != '-' || !std::isalpha((*it)[1]))) {
                 rotate_angles.push_back(std::stof(*it));
                 ++i;
                 ++it;
@@ -38,7 +39,8 @@ void Parser::parse(std::vector<std::string>& options) {
 
             int i = 0;
             ++it;
-            while (i < 3 && (*it)[0] != '-' && it != end) {
+            while (i < 3 && it != end &&
+                    ((*it)[0] != '-' || !std::isalpha((*it)[1]))) {
                 move_lengths.push_back(std::stof(*it));
                 ++i;
                 ++it;
@@ -56,7 +58,8 @@ void Parser::parse(std::vector<std::string>& options) {
 
             int i = 0;
             ++it;
-            while (i < 3 && (*it)[0] != '-' && it != end) {
+            while (i < 3 && it != end &&
+                    ((*it)[0] != '-' || !std::isalpha((*it)[1]))) {
                 scale_values.push_back(std::stof(*it));
                 ++i;
                 ++it;
@@ -69,12 +72,7 @@ void Parser::parse(std::vector<std::string>& options) {
                 file_numbers = std::stoull(*(++it));
             }
         } else if (*it == "-wv") {
-            std::cerr << "-wv feature is not imnplemented yet.\nSorry.\n\n";
-            std::exit(1);
-            /* is_wave = true;
-            if (it + 1 != end && (*(it + 1))[0] != '-') {
-                waves_numbers = std::stoull(*(++it));
-            } */
+            is_wave = true;
         } else if (*it == "-merge") {
             is_merge = true;
 

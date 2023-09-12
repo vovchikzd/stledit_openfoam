@@ -10,6 +10,7 @@
 #include "edit.h"
 #include "toposet.h"
 #include "write.h"
+#include "wave.h"
 
 namespace fs = std::filesystem;
 
@@ -21,7 +22,7 @@ int main(int argc, char* argv[]) {
                        "\t-binary\t\tConvert *.stl file to binary format.\n"
                        "\t-file \t\tSpecify the *.stl file location.\n"
                        "\t-h, --help \tDisplay help message.\n"
-                       "\t-merge \t\tMerge transferred *.stl files into one ascii file.\n"
+                       "\t-merge \t\tMerge transferred *.stl files into one file.\n"
                        "\t-mv \t\tMove object. To specify the movement axis is typing '-mvx' or '-mvyz'.\n"
                        "\t-o \t\tSpecifies the name of the resulting *.stl file.\n"
                        "\t-r \t\tRotate object. To specify the rotate axis and rotate order\n"
@@ -56,7 +57,7 @@ int main(int argc, char* argv[]) {
     fs::path new_name = parser.out_name;
 
     std::vector<fs::path> files;
-    if (!parser.is_diff_location || !parser.is_merge) {
+    if (!parser.is_diff_location && !parser.is_merge) {
 
         try {
             files = find_file();
@@ -75,8 +76,8 @@ int main(int argc, char* argv[]) {
     bool is_convert = (parser.is_to_binary || parser.is_to_ascii);
 
     std::vector<STL> objects;
-    if (!is_edit || !is_convert || !parser.is_toposet
-        || !parser.is_merge || !parser.is_wave) {
+    if (!is_edit && !is_convert && !parser.is_toposet
+        && !parser.is_merge && !parser.is_wave) {
         check_location_and_copy(files[0], new_name);
         return 0;
     } else {
@@ -90,11 +91,11 @@ int main(int argc, char* argv[]) {
     if (parser.is_toposet) {
         create_toposet(objects, parser.file_numbers);
     }
-/*
+
     if (parser.is_wave) {
-        create_wave_stl(files);
+        create_wave_stl(objects);
     }
-*/
+
     fs::path write_file = get_write_file(files, new_name);
 
     bool binary_code = true;

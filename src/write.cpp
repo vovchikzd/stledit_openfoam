@@ -3,7 +3,8 @@
 void write_ascii(const std::vector<STL>& objects, const fs::path& file) {
     std::ofstream output_file(file);
     for (auto object: objects) {
-        output_file << "solid " << object.header << '\n';
+        std::string name(object.header);
+        output_file << "solid " << name << '\n';
         for (auto facet: object.facets) {
             output_file << "facet normal "<< std::fixed
                         << facet.normal[0] << ' '
@@ -30,7 +31,7 @@ void write_ascii(const std::vector<STL>& objects, const fs::path& file) {
             output_file << "endloop\nendfacet\n";
         }
 
-        output_file << "endsolid " << object.header << '\n';
+        output_file << "endsolid " << name << '\n';
     }
     output_file.close();
 }
@@ -43,7 +44,7 @@ void write_binary(const std::vector<STL>& objects, const fs::path& file) {
     }
 
     char header[80]{};
-    std::string name = file.filename().string();
+    std::string name = file.stem().string();
     for (size_t i = 0; i < 80 && i < name.size(); ++i) {
         header[i] = name[i];
     }

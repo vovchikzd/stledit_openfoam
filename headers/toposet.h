@@ -7,7 +7,6 @@
 #include <utility>
 #include <string>
 #include <sstream>
-#include <algorithm>
 #include <filesystem>
 namespace fs = std::filesystem;
 

@@ -9,8 +9,12 @@ void binary_read(const fs::path& file, STL& object) {
     input_stl.read(reinterpret_cast<char*>(&facets_number), 4);
 
     std::string new_name = file.stem().string();
-    for (size_t i = 0; i < 80 && i < new_name.size(); ++i) {
-        object.header[i] = new_name[i];
+    for (size_t i = 0; i < 80; ++i) {
+        if (i < new_name.size()) {
+            object.header[i] = new_name[i];
+        } else {
+            object.header[i] = '\0';
+        }
     }
 
     for (uint32_t i = 0; i < facets_number; ++i) {
@@ -32,8 +36,12 @@ void ascii_read(const fs::path& file, STL& object) {
     std::getline(input_stl, readed);
 
     std::string new_name = file.stem().string();
-    for (size_t i = 0; i < 80 && i < new_name.size(); ++i) {
-        object.header[i] = new_name[i];
+    for (size_t i = 0; i < 80; ++i) {
+        if (i < new_name.size()) {
+            object.header[i] = new_name[i];
+        } else {
+            object.header[i] = '\0';
+        }
     }
 
     while(!input_stl.eof()) {

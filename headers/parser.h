@@ -6,6 +6,7 @@
 #include <string>
 #include <exception>
 #include <iostream>
+#include <locale>
 
 namespace fs = std::filesystem;
 
@@ -30,7 +31,6 @@ struct Parser {
     size_t file_numbers = 3;
 
     bool is_wave = false;
-    size_t waves_numbers = 3; 
 
     bool is_merge = false;
     std::vector<fs::path> merge_files;

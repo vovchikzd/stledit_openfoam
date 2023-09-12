@@ -1,14 +1,14 @@
 #include "edit.h"
 
 void axis_move(Facet& facet, const int& axis, const float& length) {
-    facet.normal[axis] += length;
+    // facet.normal[axis] += length;
     facet.first_vertex[axis] += length;
     facet.second_vertex[axis] += length;
     facet.third_vertex[axis] += length;
 }
 
 void axis_scale(Facet& facet, const int& axis, const float& value) {
-    facet.normal[axis] *= value;
+    // facet.normal[axis] *= value;
     facet.first_vertex[axis] *= value;
     facet.second_vertex[axis] *= value;
     facet.third_vertex[axis] *= value;
@@ -143,8 +143,8 @@ void rotate(Facet& facet, const std::string& axes,
 }
 
 void edit(const Parser& parser, std::vector<STL>& objects) {
-    for (auto object: objects) {
-        for (auto facet: object.facets) {
+    for (auto& object: objects) {
+        for (auto& facet: object.facets) {
 
             if (parser.is_rotate) {
                 rotate(facet, parser.rotate_order, parser.rotate_angles);

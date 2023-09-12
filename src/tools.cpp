@@ -130,3 +130,23 @@ fs::path get_write_file(const std::vector<fs::path>& files,
 
     return result;
 }
+
+std::vector<std::pair<float, float>> facet_minmax(const Facet& facet) {
+    std::vector<std::pair<float, float>> result;
+    auto x_pair = std::minmax({facet.first_vertex[0],
+                                   facet.second_vertex[0],
+                                   facet.third_vertex[0]});
+    result.push_back(x_pair);
+
+    auto y_pair = std::minmax({facet.first_vertex[1],
+                                   facet.second_vertex[1],
+                                   facet.third_vertex[1]});
+    result.push_back(y_pair);
+
+    auto z_pair = std::minmax({facet.first_vertex[2],
+                                   facet.second_vertex[2],
+                                   facet.third_vertex[2]});
+    result.push_back(z_pair);
+
+    return result;
+}

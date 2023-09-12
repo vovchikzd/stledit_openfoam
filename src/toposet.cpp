@@ -1,24 +1,5 @@
-#include "../headers/toposet.h"
-
-std::vector<std::pair<float, float>> facet_minmax(const Facet& facet) {
-    std::vector<std::pair<float, float>> result;
-    auto x_pair = std::minmax({facet.first_vertex[0],
-                                   facet.second_vertex[0],
-                                   facet.third_vertex[0]});
-    result.push_back(x_pair);
-
-    auto y_pair = std::minmax({facet.first_vertex[1],
-                                   facet.second_vertex[1],
-                                   facet.third_vertex[1]});
-    result.push_back(y_pair);
-
-    auto z_pair = std::minmax({facet.first_vertex[2],
-                                   facet.second_vertex[2],
-                                   facet.third_vertex[2]});
-    result.push_back(z_pair);
-
-    return result;
-}
+#include "toposet.h"
+#include "tools.h"
 
 void write_toposet(const std::vector<std::pair<float, float>>& extremes,
                    const size_t& file_numbers) {
@@ -34,10 +15,12 @@ void write_toposet(const std::vector<std::pair<float, float>>& extremes,
         fs::create_directory(system);
     }
 
-    // just stub
-    float min_from_stl = 0.5;
-    float max_length = min_from_stl * std::pow(2, file_numbers - 1);
-    float x_back = min_from_stl * 6 * std::pow(2, file_numbers - 1);
+    auto length = std::abs(x_max - x_min);
+    auto x_forward = 0.1 * length * std::pow(2, file_numbers - 1);
+    auto x_back = 0.2 * length * std::pow(2, file_numbers - 1);
+    auto z_up = 0.025 * length * std::pow(2, file_numbers - 1);
+    auto z_down = 0.05 * length * std::pow(2, file_numbers - 1);
+    auto y_side = z_down;
 
     for (size_t i = 1; i <= file_numbers; ++i) {
         std::string file_name = common_name + to_string(i);
@@ -57,15 +40,18 @@ void write_toposet(const std::vector<std::pair<float, float>>& extremes,
                     << "\tsource\tboxToCell;\n"
                     << "\tsourseInfo {\n"
                     << "\t\tbox (" << x_min - x_back
-                    << ' ' << y_min - max_length << ' '
-                    << z_min - max_length << ") ("
-                    << x_max + max_length << ' '
-                    << y_max + max_length << ' '
-                    << z_max + max_length << ");\n\t}\n});";
+                    << ' ' << y_min - y_side << ' '
+                    << z_min - z_down << ") ("
+                    << x_max + x_forward << ' '
+                    << y_max + y_side << ' '
+                    << z_max + z_up << ");\n\t}\n});";
 
         output_file.close();
-        max_length /= 2;
+        x_forward /= 2;
         x_back /= 2;
+        z_up /= 2;
+        z_down /= 2;
+        y_side /= 2;
     }
 
     std::ofstream output_refine(refinemesh);
