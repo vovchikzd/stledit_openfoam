@@ -1,21 +1,21 @@
 #ifndef EDIT_H
 #define EDIT_H
 
+#include <cmath>
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <vector>
-#include <cmath>
-#include <filesystem>
 namespace fs = std::filesystem;
 
-#include "stl.h"
-#include "tools.h"
-#include "matrix.h"
-#include "parser.h"
+#include "matrix.hpp"
+#include "parser.hpp"
+#include "stl.hpp"
+#include "tools.hpp"
 
 template <typename T>
 T rad(T angle) {
-    return angle * (3.14 / 180);
+  return angle * (3.14 / 180);
 }
 
 void axis_move(Facet&, const int&, const float&);

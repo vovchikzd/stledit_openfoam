@@ -3,14 +3,14 @@
 #include <exception>
 #include <filesystem>
 
-#include "parser.h"
-#include "stl.h"
-#include "tools.h"
-#include "read.h"
-#include "edit.h"
-#include "toposet.h"
-#include "write.h"
-#include "wave.h"
+#include "parser.hpp"
+#include "stl.hpp"
+#include "tools.hpp"
+#include "read.hpp"
+#include "edit.hpp"
+#include "toposet.hpp"
+#include "write.hpp"
+#include "wave.hpp"
 
 namespace fs = std::filesystem;
 

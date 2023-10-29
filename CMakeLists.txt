@@ -6,7 +6,7 @@ project(stlEdit
 set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_COMPILER clang++)
 # set (CMAKE_CXX_COMPILER g++)
-add_compile_options(-Wall -Wextra)
+add_compile_options(-Wall -Wextra -O2)
 # add_link_options(-static)
 
 file(GLOB sources CONFIGURE_DEPENDS
